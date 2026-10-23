@@ -14,7 +14,7 @@ class InputTests(unittest.TestCase):
 
     def test_reject_oversized_item_list(self):
         with self.assertRaises(ValueError):
-            server.validate_items([{'name':'top','description':'white'}] * 13)
+            server.validate_items([{'name':'top','description':'white'}] * (server.MAX_ITEMS + 1))
 
     def test_reject_path_traversal(self):
         with self.assertRaises(ValueError):
@@ -30,6 +30,31 @@ class FakeProcessor:
         return '/media/test/bag.png'
 
 class WorkflowTests(unittest.TestCase):
+    def test_jewelry_uses_individual_crops_and_is_not_dropped_after_clothing(self):
+        recognized = [{'name': f'Вещь {i}', 'description': 'visible item', 'category': 'Одежда', 'details': '', 'bbox': [0.1, 0.1, 0.9, 0.9]} for i in range(12)]
+        for category in ('Кольца', 'Браслеты', 'Часы', 'Серьги'):
+            recognized.append({'name': category, 'description': 'small visible accessory', 'category': category,
+                               'details': 'visible hardware; partly occluded', 'bbox': [0.45, 0.45, 0.50, 0.50]})
+        seen = []
+        def generate(folder, image, item):
+            with Image.open(image) as crop:
+                seen.append((item['category'], image.name, crop.size, item['details']))
+            return f'/media/{folder.name}/{item["id"]}.png'
+        with tempfile.TemporaryDirectory() as tmp, patch.object(server, 'DATA', Path(tmp)):
+            job_id = 'd' * 32
+            folder = Path(tmp) / job_id
+            folder.mkdir()
+            Image.new('RGB', (1000, 1000)).save(folder / 'source.png')
+            server.save({'id':job_id, 'created':1, 'status':'queued', 'source':f'/media/{job_id}/source.png', 'items':[], 'error':None})
+            with patch.object(server.PROCESSOR, 'run', return_value=json.dumps({'items': recognized})), patch.object(server.PROCESSOR, 'generate', side_effect=generate):
+                server.process(job_id)
+            result = server.read_job(job_id)
+            self.assertEqual(result['status'], 'done')
+            self.assertEqual(len(result['items']), 16)
+            jewelry = [entry for entry in seen if entry[0] != 'Одежда']
+            self.assertEqual(len(jewelry), 4)
+            self.assertTrue(all(name.endswith('-crop.png') and size == (66, 66) and 'occluded' in details for _, name, size, details in jewelry))
+
     def test_crop_clamps_padding_and_uses_original_pixels(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / 'source.png'
