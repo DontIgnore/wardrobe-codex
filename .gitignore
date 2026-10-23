@@ -1,0 +1,19 @@
+# Personal uploads, generated images, crops, task state and execution logs
+/data/
+*.log
+
+# Local environments and credentials
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Python and editor caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

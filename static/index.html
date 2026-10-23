@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Гардероб — вещи из ваших фотографий</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<header><a class="brand" href="/">гардероб<span class="brand-dot">.</span></a><span class="local">Личная коллекция</span></header>
+<main>
+  <section class="intro"><div><h1>Ваш стиль.<br><em>Каждая вещь отдельно.</em></h1><p>Добавьте фотографию образа — мы соберём из неё<br class="desktop"> коллекцию вещей с каталожными снимками.</p></div><div class="intro-note">Из повседневных фото<br>в личный гардероб.</div></section>
+  <div class="workspace">
+    <aside>
+      <h2>Добавить образ</h2>
+      <label class="drop" id="drop" for="photo"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="8" y="8" width="32" height="32" rx="4"/><circle cx="18" cy="18" r="3"/><path d="m9 33 10-10 8 8 5-5 8 9"/></svg><strong>Выберите фотографию</strong><span>или перетащите её сюда</span><small>JPG или PNG · до 15 МБ</small><input id="photo" type="file" accept="image/jpeg,image/png"></label>
+      <div id="preview-wrap" hidden><img id="preview" alt="Выбранная фотография"><button class="text-button" id="clear" type="button">Выбрать другую</button></div>
+      <button id="upload" class="primary" disabled>Разобрать образ <span aria-hidden="true">↗</span></button>
+      <p class="hint">Мы выделим каждую вещь крупным планом и создадим снимки параллельно. Готовые вещи появятся автоматически.</p>
+      <div id="notice" role="status" aria-live="polite"></div>
+      <details><summary>Как это работает</summary><p>Codex определяет вещи и их координаты. Приложение обрезает исходник вокруг каждой вещи и отправляет эти крупные планы на параллельную генерацию. Ссылка «Крупный план» показывает, что увидел генератор.</p><p>Фотографии передаются Codex для обработки. Исходники и результаты сохраняются на этом компьютере. Скрытые детали дорисовываются, поэтому результат может отличаться от оригинала. Генерация расходует лимиты Codex.</p></details>
+    </aside>
+    <section class="collection" aria-label="Коллекция вещей">
+      <div class="collection-head"><h2>Мой гардероб <span id="count">0</span></h2><span id="connection" role="status">Подключение…</span></div>
+      <div class="filters" id="filters" aria-label="Категории"></div>
+      <div id="jobs"></div>
+      <div class="empty" id="empty" hidden><h3>Здесь начинается ваша коллекция</h3><p>Загрузите первый образ. Топы, брюки, обувь и аксессуары<br>получат собственное место в гардеробе.</p></div>
+    </section>
+  </div>
+</main>
+<footer><span>гардероб.</span><span>Меньше искать. Больше сочетать.</span></footer>
+<script src="/app.js" defer></script>
+</body></html>
